@@ -1,0 +1,14 @@
+{
+  "name": "@openweb3auth/react",
+  "module": "src/index.tsx",
+  "type": "module",
+  "dependencies": {
+    "@openweb3auth/sdk-browser": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

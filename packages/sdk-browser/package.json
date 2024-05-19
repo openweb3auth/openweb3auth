@@ -1,0 +1,14 @@
+{
+  "name": "@openweb3auth/sdk-browser",
+  "module": "src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "@openweb3auth/sss": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

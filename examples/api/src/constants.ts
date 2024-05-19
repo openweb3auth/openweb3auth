@@ -1,0 +1,1 @@
+export const AES256_KEY = process.env.SECRET_KEY as string

@@ -1,0 +1,41 @@
+{
+  "version": "6",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1715951249712,
+      "tag": "0000_colorful_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1715951609231,
+      "tag": "0001_certain_serpent_society",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1715952652374,
+      "tag": "0002_nostalgic_captain_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1716053360369,
+      "tag": "0003_sparkling_the_executioner",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1716108904089,
+      "tag": "0004_happy_pride",
+      "breakpoints": true
+    }
+  ]
+}
