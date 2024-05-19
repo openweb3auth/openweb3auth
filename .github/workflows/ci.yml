@@ -22,10 +22,6 @@ jobs:
       # - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
 
       # Cache node_modules
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -34,4 +30,4 @@ jobs:
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
-      - run: npx nx affected -t lint test build
+      - run: bunx nx affected -t lint test build
