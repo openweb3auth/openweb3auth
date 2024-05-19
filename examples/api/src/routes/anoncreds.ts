@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { Router } from "express";
 import { Logger } from "tslog";
 import { v5 as uuidv5 } from 'uuid';

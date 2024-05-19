@@ -26,6 +26,7 @@ import {
 	type DidResolutionResult,
 	type DidResolver,
 } from '@credo-ts/core'
+import { config } from './config'
 
 function SilentSignin({ children }: { children: React.ReactNode }) {
 	const auth = useAuth()
@@ -77,7 +78,7 @@ function getAgentModules() {
 			],
 		}),
 		anoncreds: new AnonCredsModule({
-			registries: [new RESTfulAnonCredsRegistry('http://localhost:3015/anoncreds')],
+			registries: [new RESTfulAnonCredsRegistry(config.anoncredsUrl)],
 			anoncreds: new BrowserAnoncreds(),
 		}),
 		mediationRecipient: new MediationRecipientModule({
@@ -88,17 +89,12 @@ function getAgentModules() {
 }
 
 function App() {
-	const oidcConfig: AuthProviderProps = {
-		authority: 'http://localhost:8080/realms/wallet',
-		client_id: 'openweb3auth',
-		redirect_uri: 'http://localhost:5174/login/callback',
-	}
-
+	const oidcConfig: AuthProviderProps = config.auth
 	return (
 		<BrowserRouter basename="">
 			<AuthProvider {...oidcConfig}>
-				<OpenWeb3AuthProvider url="http://localhost:3015">
-					<CredoProvider mediatorDid="did:web:mediator.kfs.es" modules={getAgentModules()}>
+				<OpenWeb3AuthProvider url={config.apiUrl}>
+					<CredoProvider mediatorDid={config.mediatorDid} modules={getAgentModules()}>
 						<SilentSignin>
 							<Routes>
 								<Route path="/" element={<Index />} />

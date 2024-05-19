@@ -18,6 +18,7 @@
     "@types/express-jwt": "^7.4.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/speakeasy": "^2.0.10",
+    "@types/uuid": "^9.0.8",
     "cors": "^2.8.5",
     "drizzle-kit": "^0.21.2",
     "drizzle-orm": "^0.30.10",
@@ -29,6 +30,8 @@
     "postgres": "^3.4.4",
     "shamir-secret-sharing": "^0.0.3",
     "speakeasy": "^2.0.0",
+    "tslog": "^4.9.2",
+    "uuid": "^9.0.1",
     "zod": "^3.23.8"
   }
 }
