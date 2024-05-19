@@ -1,13 +1,15 @@
 {
 	"targets": {
 		"build": {
-			"command": "tsc"
-		},
-		"test": {
-			"command": "jest",
-			"dependsOn": [
-				"build"
-			]
+			"executor": "@nx/js:tsc",
+			"options": {
+				"outputPath": "dist/packages/sss",
+				"main": "packages/sss/src/index.ts",
+				"tsConfig": "packages/sss/tsconfig.json",
+				"assets": [
+					"packages/sss/*.md"
+				]
+			}
 		}
 	}
 }
