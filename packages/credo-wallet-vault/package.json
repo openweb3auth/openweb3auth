@@ -1,0 +1,16 @@
+{
+  "name": "@openweb3auth/credo-wallet-vault",
+  "module": "src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "node-vault": "^0.10.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "@credo-ts/core": "^0.5.3",
+    "typescript": "^5.0.0"
+  }
+}

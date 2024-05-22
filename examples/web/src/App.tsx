@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Index from './pages/Index'
 import LoginCallback from './pages/LoginCallback'
 import { IDBBrowserWalletModule } from '@openweb3auth/credo-wallet-browser-idb'
+
 import { BrowserAnoncreds, RESTfulAnonCredsRegistry } from '@openweb3auth/credo-anoncreds'
 import { AnonCredsCredentialFormatService, AnonCredsModule, AnonCredsProofFormatService } from '@credo-ts/anoncreds'
 import {

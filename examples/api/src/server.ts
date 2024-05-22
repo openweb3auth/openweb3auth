@@ -1,14 +1,23 @@
-import { eq } from "drizzle-orm"
-import express from "express"
-import jwksClient from 'jwks-rsa'
-import { db, encryptedShares, sessions } from "./db"
-import { decrypt, encrypt, generateNonce } from "./encryption"
-import { createSessionSchema, createShareSchema } from "./schemas"
-import { expressjwt, type GetVerificationKey, type Request } from 'express-jwt';
 import cors from "cors"
+import { eq } from "drizzle-orm"
 import { ec as EC } from "elliptic"
+import express, { type Response } from "express"
+import { expressjwt, type GetVerificationKey, type Request } from 'express-jwt'
+import jwksClient from 'jwks-rsa'
+import { getAgent } from "./agent"
+import { db, encryptedShares } from "./db"
+import { decrypt, encrypt, generateNonce } from "./encryption"
+import { WalletLib } from "./lib"
 import { setupAnoncreds } from "./routes/anoncreds"
+import { createSessionSchema, createShareSchema } from "./schemas"
+
 async function main() {
+	const agent = await getAgent()
+	await agent.initialize()
+	const didKeyResult = await agent.dids.create({
+		method: "key",
+	})
+	console.log("DID Key created", JSON.stringify(didKeyResult.didState.didDocument, null, 2))
 	const app = express()
 	const ec = new EC("secp256k1")
 
@@ -40,11 +49,12 @@ async function main() {
 	app.use(checkJwt)
 	app.use(cors())
 	app.use(express.json())
+	const walletLib = new WalletLib()
 
 	const anoncredsRouter = setupAnoncreds(db)
 	app.use("/anoncreds", anoncredsRouter)
 
-	app.get("/wallet/info", async (req: Request, res) => {
+	app.get("/wallet/info", async (req: Request, res: Response) => {
 		try {
 			if (!req.auth) {
 				return res.status(401).send({ error: "Unauthorized" })
@@ -53,16 +63,13 @@ async function main() {
 			if (!userId) {
 				return res.status(401).send({ error: "Unauthorized" })
 			}
-			const shares = await db.select().from(encryptedShares).where(eq(
-				encryptedShares.userId,
-				userId
-			))
-			res.send({ configured: shares.length > 0 })
+			const share = await walletLib.getEncryptedShareForUserId(userId)
+			res.send({ configured: !!share })
 		} catch (e) {
 			res.status(400).send({ error: (e as any).toString() })
 		}
 	})
-	app.post("/session", async (req: Request, res) => {
+	app.post("/session", async (req: Request, res: Response) => {
 		try {
 			if (!req.auth) {
 				return res.status(401).send({ error: "Unauthorized" })
@@ -78,22 +85,15 @@ async function main() {
 			const nonce = generateNonce()
 			const destPublicKey = ec.keyFromPublic(tempPublicKey, "hex")
 			const encryptedPrivateKey = encrypt(privateKey)
-			const insertedSessions = await db.insert(sessions).values({
-				destPublicKey: destPublicKey.getPublic("hex"),
-				privateKey: encryptedPrivateKey,
-				nonce,
-				userId,
-			}).returning({
-				id: sessions.id
-			})
-			const insertedSessionId = insertedSessions[0].id
-			res.send({ id: insertedSessionId, publicKeyEnc })
+			const session = await walletLib.createSession(userId, encryptedPrivateKey, destPublicKey.getPublic("hex"))
+
+			res.send({ id: session.id, publicKeyEnc })
 		} catch (e) {
 			res.status(400).send({ error: (e as any).toString() })
 		}
 
 	})
-	app.post("/share", async (req: Request, res) => {
+	app.post("/share", async (req: Request, res: Response) => {
 		try {
 			if (!req.auth) {
 				return res.status(401).send({ error: "Unauthorized" })
@@ -103,22 +103,15 @@ async function main() {
 				return res.status(401).send({ error: "Unauthorized" })
 			}
 			// check if there's any share for the user
-			const shares = await db.select().from(encryptedShares).where(eq(
-				encryptedShares.userId,
-				userId
-			))
-			if (shares.length > 0) {
+			const share = await walletLib.getEncryptedShareForUserId(userId)
+			if (!!share) {
 				return res.status(400).send({ error: "User already has a share" })
 			}
 			const { encryptedShare, sessionId } = createShareSchema.parse(req.body)
-			const sessionList = await db.select().from(sessions).where(eq(
-				sessions.id,
-				sessionId
-			))
-			if (sessionList.length === 0) {
+			const session = await walletLib.getSessionById(sessionId)
+			if (!session) {
 				throw new Error("Session not found")
 			}
-			const session = sessionList[0]
 			const ourPrivateKey = ec.keyFromPrivate(decrypt(session.privateKey), "hex")
 			const destPublicKey = ec.keyFromPublic(session.destPublicKey, "hex")
 			const derivedSecret = ourPrivateKey.derive(destPublicKey.getPublic())
@@ -133,7 +126,7 @@ async function main() {
 			res.status(400).send({ error: (e as any).toString() })
 		}
 	})
-	app.get("/session/:id/share", async (req: Request, res) => {
+	app.get("/session/:id/share", async (req: Request, res: Response) => {
 		try {
 			if (!req.auth) {
 				return res.status(401).send({ error: "Unauthorized" })
@@ -144,14 +137,10 @@ async function main() {
 			}
 			// find session by id param
 			const sessionId = req.params.id
-			const sessionList = await db.select().from(sessions).where(eq(
-				sessions.id,
-				sessionId
-			))
-			if (sessionList.length === 0) {
+			const session = await walletLib.getSessionById(sessionId)
+			if (!session) {
 				throw new Error("Session not found")
 			}
-			const session = sessionList[0]
 			const shares = await db.select().from(encryptedShares).where(eq(
 				encryptedShares.userId,
 				userId
@@ -170,7 +159,7 @@ async function main() {
 			res.status(400).send({ error: (e as any).toString() })
 		}
 	})
-	app.post("/reset", async (req: Request, res) => {
+	app.post("/reset", async (req: Request, res: Response) => {
 		try {
 			if (!req.auth) {
 				return res.status(401).send({ error: "Unauthorized" })
@@ -179,15 +168,14 @@ async function main() {
 			if (!userId) {
 				return res.status(401).send({ error: "Unauthorized" })
 			}
-			await db.delete(encryptedShares).where(eq(
-				encryptedShares.userId,
-				userId
-			))
+			await walletLib.deleteEncryptedShareForUserId(userId)
 			res.send({ status: "ok" })
 		} catch (e) {
 			res.status(400).send({ error: (e as any).toString() })
 		}
 	})
+
+
 	app.listen(port, () => {
 		console.log(`Server is running on port ${port}`)
 	})

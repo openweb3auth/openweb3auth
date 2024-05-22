@@ -4,10 +4,6 @@ import { generateAddressFromPubKey } from "./keyUtils"
 import { combine, split } from "@openweb3auth/sss"
 const ec = new EC("secp256k1")
 
-interface Wallet {
-	privateKey: EC.KeyPair
-}
-
 class OpenWeb3AuthClient {
 	constructor(private readonly url: string) {
 	}

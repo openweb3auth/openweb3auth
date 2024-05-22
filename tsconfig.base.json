@@ -28,6 +28,12 @@
       "@openweb3auth/credo": [
         "packages/credo/src/index.tsx"
       ],
+      "@openweb3auth/credo-wallet-vault": [
+        "packages/credo-wallet-vault/src/index.ts"
+      ],
+      "@openweb3auth/credo-storage-postgres": [
+        "packages/credo-storage-postgres/src/index.ts"
+      ],
       "@openweb3auth/credo-anoncreds": [
         "packages/credo-anoncreds/src/index.ts"
       ],

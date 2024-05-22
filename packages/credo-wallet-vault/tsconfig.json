@@ -1,32 +1,30 @@
 {
   "extends": "../../tsconfig.base.json",
+  "include": [
+    "src/**/*.ts"
+  ],
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     // Enable latest features
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+
     // Bundler mode
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ],
+
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
