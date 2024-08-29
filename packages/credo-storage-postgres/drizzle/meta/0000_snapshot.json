@@ -1,5 +1,5 @@
 {
-  "id": "a5307678-82f4-4088-94bc-a93675d56298",
+  "id": "d0e83503-1608-4556-a0b7-49de0ee0efba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -14,6 +14,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "type": {
           "name": "type",
@@ -73,7 +79,16 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "AriesStorageRecord_agentId_key_unique": {
+          "name": "AriesStorageRecord_agentId_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "agentId",
+            "key"
+          ]
+        }
+      }
     }
   },
   "enums": {},
