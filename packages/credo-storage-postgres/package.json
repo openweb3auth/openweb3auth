@@ -1,4 +1,5 @@
 {
+  "version": "0.0.1",
   "name": "@openweb3auth/credo-storage-postgres",
   "module": "src/index.ts",
   "type": "module",

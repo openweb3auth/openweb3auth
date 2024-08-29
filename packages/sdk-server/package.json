@@ -1,4 +1,5 @@
 {
+  "version": "0.0.1",
   "name": "@openweb3auth/sdk-server",
   "module": "src/index.ts",
   "type": "module",
