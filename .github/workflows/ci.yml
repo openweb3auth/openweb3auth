@@ -36,7 +36,7 @@ jobs:
       # Update package versions
       - name: Update package versions
         run: |
-          current_date=$(date +'%Y%m%d')
+          current_date=$(date +%s)
           for pkg in packages/*; do
             if [ -f "$pkg/package.json" ]; then
               jq --arg date "$current_date" '.version = (.version | split("-")[0] + "-" + $date)' "$pkg/package.json" > "$pkg/package.json.tmp" && mv "$pkg/package.json.tmp" "$pkg/package.json"
