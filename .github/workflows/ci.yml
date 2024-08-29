@@ -21,11 +21,11 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: 1.1.26
-      - run: bun install --no-save
+      - run: bun install --frozen-lock
 
       # Run Turbo
       - name: Build
-        run: bunx turbo run build
+        run: bun turbo run build
 
       # Set up Node.js for publishing
       - uses: actions/setup-node@v3
