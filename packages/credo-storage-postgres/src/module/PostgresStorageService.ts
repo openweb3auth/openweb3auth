@@ -20,7 +20,8 @@ export type PaginatedQuery<T extends BaseRecord<any, any, any>> = Query<T> & {
 export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRecord<any, any, any>> implements StorageService<T> {
 	constructor(@inject(DataSourceSymbol) private readonly db: PostgresJsDatabase) {}
 	private recordToInstance(record: AriesStorageRecordModel, recordClass: BaseRecordConstructor<T>): T {
-		const instance = JsonTransformer.fromJSON<T>(record.value, recordClass)
+		console.log('recordToInstance', record)
+		const instance = JsonTransformer.fromJSON<T>(JSON.stringify(record.value), recordClass)
 		instance.id = record.key!
 		instance.replaceTags(record.tags)
 
