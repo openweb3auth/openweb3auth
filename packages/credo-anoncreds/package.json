@@ -7,9 +7,9 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "scripts": {
-    "build": "tsc"
-  },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/bun": "latest"
