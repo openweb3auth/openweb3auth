@@ -4,7 +4,7 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.ts"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -23,7 +23,7 @@
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "@credo-ts/core": "^0.5.3",
+    "@credo-ts/core": "^0.5.10",
     "typescript": "^5.0.0"
   }
 }
