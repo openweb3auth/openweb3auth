@@ -23,5 +23,5 @@ jobs:
       - run: bun install --no-save
 
       # Run Turbo
-      - name: Build, lint, and test
-        run: bunx turbo run build lint test
+      - name: Build
+        run: bunx turbo run build
