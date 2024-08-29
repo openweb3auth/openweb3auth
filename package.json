@@ -2,7 +2,11 @@
   "name": "openweb3auth-mr",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint"
+  },
   "private": true,
   "dependencies": {
     "@types/elliptic": "^6.4.18",
@@ -12,15 +16,13 @@
     "ethereum-cryptography": "^2.1.3"
   },
   "devDependencies": {
-    "@nx/js": "19.0.4",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/npm": "^12.0.1",
-    "nx": "19.0.4",
     "semantic-release": "^23.1.1"
   },
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "bun@1.1.26"
 }
