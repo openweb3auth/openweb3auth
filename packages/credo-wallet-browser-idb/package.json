@@ -2,6 +2,13 @@
   "name": "@openweb3auth/credo-wallet-browser-idb",
   "module": "src/index.ts",
   "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.ts"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

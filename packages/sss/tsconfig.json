@@ -11,6 +11,8 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    "declaration": true,
+    "outDir": "./dist",
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,

@@ -2,7 +2,12 @@
   "name": "@openweb3auth/credo-storage-postgres",
   "module": "src/index.ts",
   "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.ts"
+  },
   "scripts": {
+    "build": "tsc",
     "db:generate:migration": "drizzle-kit generate",
     "db:migrate": "drizzle-kit push --config=drizzle.config.ts"
   },
