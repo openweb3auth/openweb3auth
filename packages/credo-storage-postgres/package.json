@@ -17,17 +17,16 @@
     "db:migrate": "drizzle-kit push --config=drizzle.config.ts"
   },
   "dependencies": {
-    "node-vault": "^0.10.2",
     "uuid": "^9.0.1",
-    "postgres": "^3.4.4",
-    "drizzle-kit": "^0.21.2",
-    "drizzle-orm": "^0.30.10",
     "tslog": "^4.9.2"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
+    "postgres": "^3.4.4",
+    "drizzle-kit": "^0.21.2",
+    "drizzle-orm": "^0.30.10",
     "@credo-ts/core": "^0.5.10",
     "typescript": "^5.0.0"
   }
