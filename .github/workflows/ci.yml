@@ -7,6 +7,7 @@ on:
 permissions:
   actions: read
   contents: read
+  packages: write
 
 jobs:
   main:
@@ -25,3 +26,32 @@ jobs:
       # Run Turbo
       - name: Build
         run: bunx turbo run build
+
+      # Set up Node.js for publishing
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Update package versions
+      - name: Update package versions
+        run: |
+          current_date=$(date +'%Y%m%d')
+          for pkg in packages/*; do
+            if [ -f "$pkg/package.json" ]; then
+              jq --arg date "$current_date" '.version = (.version | split("-")[0] + "-" + $date)' "$pkg/package.json" > "$pkg/package.json.tmp" && mv "$pkg/package.json.tmp" "$pkg/package.json"
+            fi
+          done
+
+      # Publish packages
+      - name: Publish packages
+        run: |
+          for pkg in packages/*; do
+            if [ -f "$pkg/package.json" ]; then
+              cd $pkg
+              npm publish --access public
+              cd ../..
+            fi
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
