@@ -40,8 +40,8 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 		await this.db.insert(ariesStorageRecord).values({
 			key: record.id,
 			type: record.type,
-			value: sql`${value}::jsonb`,
-			tags: sql`${record.getTags()}::jsonb`,
+			value: value,
+			tags: record.getTags(),
 			agentId: (agentContext.wallet as WalletWithConfig).walletConfig!.id,
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -65,8 +65,8 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 		await this.db
 			.update(ariesStorageRecord)
 			.set({
-				value: sql`${value}::jsonb`,
-				tags: sql`${record.getTags()}::jsonb`,
+				value: value,
+				tags: record.getTags(),
 				updatedAt: new Date(),
 			})
 			.where(eq(ariesStorageRecord.key, record.id))
