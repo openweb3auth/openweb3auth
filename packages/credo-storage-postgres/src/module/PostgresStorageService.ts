@@ -20,8 +20,7 @@ export type PaginatedQuery<T extends BaseRecord<any, any, any>> = Query<T> & {
 export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRecord<any, any, any>> implements StorageService<T> {
 	constructor(@inject(DataSourceSymbol) private readonly db: PostgresJsDatabase) {}
 	private recordToInstance(record: AriesStorageRecordModel, recordClass: BaseRecordConstructor<T>): T {
-		console.log('recordToInstance', record)
-		const instance = JsonTransformer.fromJSON<T>(JSON.stringify(record.value), recordClass)
+		const instance = JsonTransformer.fromJSON<T>(record.value, recordClass)
 		instance.id = record.key!
 		instance.replaceTags(record.tags)
 
@@ -37,7 +36,7 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 		if (existingRecords.length > 0) {
 			throw new RecordDuplicateError(`Record with id ${record.id} already exists`, { recordType: record.type })
 		}
-		log.info('saving record with id', record.id)
+		log.info('saving record with id', record)
 		await this.db.insert(ariesStorageRecord).values({
 			key: record.id,
 			type: record.type,
@@ -50,6 +49,7 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 	}
 
 	async update(agentContext: AgentContext, record: T): Promise<void> {
+		log.info('Updating record', record)
 		record.updatedAt = new Date()
 		const value = JsonTransformer.toJSON(record)
 		delete value._tags
@@ -70,7 +70,7 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 				tags: record.getTags(),
 				updatedAt: new Date(),
 			})
-			.where(eq(ariesStorageRecord.key, record.id))
+			.where(and(eq(ariesStorageRecord.key, record.id), eq(ariesStorageRecord.agentId, agentId)))
 	}
 
 	async delete(agentContext: AgentContext, record: T): Promise<void> {
@@ -103,7 +103,9 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 			throw new RecordNotFoundError(`record with id ${id} not found.`, { recordType: recordClass.type })
 		}
 		const record = records[0]
-		return this.recordToInstance(record, recordClass)
+		const recordToReturn = this.recordToInstance(record, recordClass)
+		log.info('Returning record', recordToReturn)
+		return recordToReturn
 	}
 
 	async getAll(agentContext: AgentContext, recordClass: BaseRecordConstructor<T>): Promise<T[]> {
@@ -122,7 +124,11 @@ export class PostgresStorageService<T extends BaseRecord<any, any, any> = BaseRe
 		let queryBuilder: any = this.db
 			.select()
 			.from(ariesStorageRecord)
-			.where(and(sql`${ariesStorageRecord.tags} @> ${whereQuery}`, eq(ariesStorageRecord.agentId, agentId), eq(ariesStorageRecord.type, recordClass.type)))
+			.where(and(
+				sql`${ariesStorageRecord.tags}::jsonb @> ${JSON.stringify(whereQuery)}::jsonb`,
+				eq(ariesStorageRecord.agentId, agentId),
+				eq(ariesStorageRecord.type, recordClass.type)
+			))
 			.orderBy(desc(ariesStorageRecord.createdAt))
 
 		if (page && pageSize) {

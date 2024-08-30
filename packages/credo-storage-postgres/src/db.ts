@@ -1,7 +1,20 @@
 import { sql, type InferSelectModel } from 'drizzle-orm'
-import { index, jsonb, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
+import { customType, index, jsonb, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import * as migrator from 'drizzle-orm/postgres-js/migrator'
+
+export const customJsonb = <TData>(name: string) =>
+	customType<{ data: TData; driverData: TData }>({
+		dataType() {
+			return 'jsonb'
+		},
+		toDriver(val: TData) {
+			return sql`(((${JSON.stringify(val)})::jsonb)#>> '{}')::jsonb`
+		},
+		fromDriver(value): TData {
+			return value as TData
+		},
+	})(name)
 
 export const ariesStorageRecord = pgTable(
 	'AriesStorageRecord',
@@ -12,8 +25,8 @@ export const ariesStorageRecord = pgTable(
 		key: text('key'),
 		type: text('type').notNull(),
 		agentId: text('agentId').notNull(),
-		value: jsonb('value').notNull(),
-		tags: jsonb('tags').notNull(),
+		value: customJsonb<any>('value').notNull(),
+		tags: customJsonb<any>('tags').notNull(),
 		createdAt: timestamp('createdAt').defaultNow().notNull(),
 		updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 	},
